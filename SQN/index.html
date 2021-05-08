@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description"
+          content="SQN: Weakly-Supervised Semantic Segmentation of Large-Scale 3D Point Clouds with 1000x Fewer Labels">
+    <meta name="author" content="Qingyong Hu,
+                                 Bo Yang,
+                                 Guangchi Fang,
+                                 Yulan Guo,
+                                 Ales Leonardis,
+                                 Niki Trigoni,
+                                 Andrew Markham">
+
+    <title>SQN: Weakly-Supervised Semantic Segmentation of Large-Scale 3D Point Clouds with 1000x Fewer Labels</title>
+    <!-- Bootstrap core CSS -->
+    <!--link href="bootstrap.min.css" rel="stylesheet"-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <!-- Custom styles for this template -->
+    <link href="offcanvas.css" rel="stylesheet">
+    <!--    <link rel="icon" href="img/favicon.gif" type="image/gif">-->
+</head>
+
+<body>
+<div class="jumbotron jumbotron-fluid">
+    <div class="container"></div>
+    <h2>SQN: Weakly-Supervised Semantic Segmentation of Large-Scale</br>
+        3D Point Clouds with 1000x Fewer Labels</h2>
+    <h3>Arxiv 2021 </h3>
+    <!--            <p class="abstract">An interpretable, data-efficient, and scalable neural scene representation.</p>-->
+    <hr>
+    <p class="authors">
+        <a href="https://qingyonghu.github.io/"> Qingyong Hu</a>,
+        <a href="https://yang7879.github.io/"> Bo Yang</a>,
+        <a href=""> Guangchi Fang</a>,
+        <a href="https://www.cs.bham.ac.uk/~leonarda/"> Ales Leonardis</a>,</br>
+        <a href="http://yulanguo.me/"> Yulan Guo</a>,
+        <a href="https://www.cs.ox.ac.uk/people/niki.trigoni/"> Niki Trigoni</a>,
+        <a href="https://www.cs.ox.ac.uk/people/andrew.markham/"> Andrew Markham</a>
+    </p>
+    <div class="btn-group" role="group" aria-label="Top menu">
+        <a class="btn btn-primary" href="http://arxiv.org/abs/2009.03137">Paper</a>
+        <a class="btn btn-primary" href="https://github.com/QingyongHu/SQN">Code</a>
+        <a class="btn btn-primary" href="">Blog</a>
+        <a class="btn btn-primary" href="">Video</a>
+    </div>
+</div>
+
+<div class="container">
+    <div class="section">
+        <div class="vcontainer">
+            <iframe class='video' src="https://www.youtube.com/embed/Q2fLWGBeaiI" frameborder="0"
+                    allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen></iframe>
+        </div>
+        <hr>
+        <p>
+            We study the problem of labelling effort for semantic segmentation of large-scale 3D point clouds. Existing
+            works usually rely on densely annotated point-level semantic labels to provide supervision for network
+            training. However, in real-world scenarios that contain billions of points, it is impractical and extremely
+            costly to manually annotate every single point. In this paper, we first investigate whether dense 3D
+            labels are truly required for learning meaningful semantic representations. Interestingly, we find that
+            the segmentation performance of existing works only drops slightly given as few as 1% of the annotations.
+            However, beyond this point (e.g., 1‰ and below) existing techniques fail catastrophically. To this end, we
+            propose a new weak supervision method to implicitly augment the total amount of available supervision
+            signals, by leveraging the semantic similarity between neighboring points. Extensive experiments
+            demonstrate that the proposed Semantic Query Network (SQN) achieves state-of-the-art performance on six
+            large-scale open datasets under weak supervision schemes, while requiring only 1‰ labeled points for
+            training.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Baselines</h2>
+        <hr>
+        <p>
+            The following results compare SIREN to a variety of network architectures. <b>TanH</b>, <b>ReLU</b>,
+            <b>Softplus</b> etc. means an MLP of equal size with the respective nonlinearity.
+            We also compare to the recently proposed positional encoding, combined with a ReLU nonlinearity, noted as
+            <b>ReLU P.E.</b>
+            SIREN outperforms all baselines by a significant margin, converges significantly faster, and is the only
+            architecture that accurately represents the gradients of the signal, enabling its use to solve boundary
+            value problems.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Representing images</h2>
+        <hr>
+        <p>
+            A Siren that maps 2D pixel coordinates to a color may be used to parameterize images. Here, we supervise
+            Siren
+            directly with ground-truth pixel values. Siren not only fits the image with a 10 dB higher PSNR and in
+            significantly
+            fewer iterations than all baseline architectures, but is also the only MLP that accurately represents the
+            first-
+            and second order derivatives of the image.
+        </p>
+        <div class="row align-items-center">
+            <div class="col justify-content-center text-center">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/image_convergence_15s_label.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col justify-content-center text-center">
+                <video width="40%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/psnr_image_convergence_15s.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+
+        <div class="section">
+            <h2>Solving the Poisson Equation</h2>
+            <hr>
+            <p>
+                By supervising only the derivatives of Siren, we can solve <a
+                    href="https://en.wikipedia.org/wiki/Poisson%27s_equation">Poisson's equation</a>.
+                Siren is again the only architecture that fits image, gradient, and laplacian domains accurately and
+                swiftly.
+            </p>
+            <div class="row align-items-center">
+                <div class="col justify-content-center text-center">
+                    <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                        <source src="img/poisson_convergence_15s_label.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+            <div class="row align-items-center">
+                <div class="col justify-content-center text-center">
+                    <video width="40%" playsinline="" autoplay="" loop="" preload="" muted="">
+                        <source src="img/psnr_poisson_convergence_15s.mp4" type="video/mp4">
+                    </video>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Representing shapes by solving the Eikonal equation<br>
+                Interactive 3D SDF Viewer - Use Your Mouse to Navigate the Scenes</h2>
+            <hr>
+            <p>
+                We can recover an SDF from a pointcloud and surface normals by solving the <a
+                    href="https://www.google.com/search?client=ubuntu&channel=fs&q=eikonal+equation&ie=utf-8&oe=utf-8">Eikonal
+                equation</a>,
+                a first-order boundary value problem. SIREN can recover a room-scale scene given only its pointcloud
+                and surface normals, accurately reproducing fine detail, in less than an hour of training.
+                In contrast to recent work on combining voxel grids with neural implicit representations,
+                this stores the full scene in the weights of a single, 5-layer neural network, with no 2D or 3D
+                convolutions, and orders of magnitude fewer parameters. Zoom in to compare fine detail!
+                <b>Note that these SDFs are not supervised with ground-truth SDF / occupancy values, but rather, are the
+                    result of solving the above Eikonal boundary value problem. This is a significantly harder task,
+                    which requires supervision in the gradient domain (see paper). As a result, architectures whose
+                    gradients
+                    are not well-behaved perform worse than SIREN.</b>
+            </p>
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-md-6 padding-0 canvas-row">
+                        <h4>Room - Siren</h4>
+                        <model-viewer
+                                alt="Room Siren"
+                                src="img/room_siren.glb"
+                                style="width: 100%; height:300px; background-color: #404040"
+                                exposure=".8"
+                                camera-orbit="0deg 75deg 105%"
+                                auto-rotate
+                                camera-controls>
+                        </model-viewer>
+                    </div>
+                    <div class="col-md-6 padding-0 canvas-row">
+                        <h4>Room - ReLU</h4>
+                        <model-viewer
+                                alt="Room ReLU"
+                                src="img/room_relu.glb"
+                                style="width: 100%; height: 300px; background-color: #404040"
+                                exposure=".8"
+                                auto-rotate
+                                camera-controls>
+                        </model-viewer>
+                        <!--                            poster="https://uploads-ssl.webflow.com/51e0d73d83d06baa7a00000f/5e7e6db2d75a9b467eee4111_legomesh_cover.png"-->
+                    </div>
+                </div>
+                <div class="row align-items-center">
+                    <div class="col-md-4 padding-0 canvas-row">
+                        <h4>Statue - Siren</h4>
+                        <model-viewer
+                                alt="Statue Siren"
+                                src="img/statue_siren.glb"
+                                style="width: 100%; height: 600px; background-color: #404040"
+                                exposure=".8"
+                                camera-orbit="0deg 75deg 20%"
+                                auto-rotate
+                                camera-controls>
+                        </model-viewer>
+                    </div>
+                    <div class="col-md-4 padding-0 canvas-row">
+                        <h4>Statue - ReLU Pos. Enc.</h4>
+                        <model-viewer
+                                alt="Statue Positional Encoding"
+                                src="img/statue_relu_pe.glb"
+                                style="width: 100%; height: 600px; background-color: #404040"
+                                exposure=".8"
+                                camera-orbit="0deg 75deg 20%"
+                                auto-rotate
+                                camera-controls>
+                        </model-viewer>
+                    </div>
+                    <div class="col-md-4 padding-0 canvas-row">
+                        <h4>Statue - ReLU</h4>
+                        <model-viewer
+                                alt="Statue ReLU"
+                                src="img/statue_relu.glb"
+                                style="width: 100%; height: 600px; background-color: #404040"
+                                exposure=".8"
+                                camera-orbit="0deg 75deg 20%"
+                                auto-rotate
+                                camera-controls>
+                        </model-viewer>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loads <model-viewer> for modern browsers: -->
+            <script type="module"
+                    src="https://unpkg.com/@google/model-viewer/dist/model-viewer.js">
+            </script>
+        </div>
+
+        <div class="section">
+            <h2>Solving the Helmholtz equation</h2>
+            <hr>
+            <p>
+                Here, we use Siren to solve the <a href="https://en.wikipedia.org/wiki/Helmholtz_equation">inhomogeneous
+                Helmholtz equation</a>.
+                ReLU- and Tanh-based architectures fail entirely to converge to a solution.
+            </p>
+            <div class="gif">
+                <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="">
+                    <source src="img/helmholtz_convergence_video_pad_label.mp4" type="video/mp4">
+                </video>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Solving the wave equation</h2>
+            <hr>
+            <p>
+                In the time domain, Siren succeeds to solve the wave equation, while a Tanh-based architecture fails to
+                discover the
+                correct solution.
+            </p>
+            <video width="100%" playsinline="" autoplay="" loop="" preload="" muted="" class="gif">
+                <source src="img/wave_combined_pad_label.mp4" type="video/mp4">
+            </video>
+        </div>
+
+        <div class="section">
+            <h2>Related Projects</h2>
+            <hr>
+            <p>
+                Check out our related projects on the topic of 3D point clouds! <br>
+            </p>
+            <div class='row vspace-top'>
+                <div class="col-sm-3">
+                    <img src='../imgs/CVPR20_SemanticKITTI.gif' class='img-fluid'>
+                </div>
+
+                <div class="col">
+                    <div class='paper-title'>
+                        <a href="https://github.com/QingyongHu/RandLA-Net/">RandLA-Net: Efficient Semantic Segmentation
+                            of Large-Scale Point Clouds (CVPR 2020, Oral) </a>
+                    </div>
+                    <div>
+                        We propose a simple and efficient neural architecture for 3D semantic segmentation on
+                        large-scale point clouds. It achieves the SOTA performance on Semantic3D and SemanticKITTI (Nov
+                        2019), with up to 200x fast than existing approaches.
+                    </div>
+                </div>
+            </div>
+
+
+            <div class='row vspace-top'>
+                <div class="col-sm-3">
+                    <img src='../imgs/3DV2020.gif' class='img-fluid'>
+                </div>
+
+                <div class="col">
+                    <div class='paper-title'>
+                        <a href="http://point-cloud-analysis.cs.ox.ac.uk/">Towards Semantic Segmentation of Urban-Scale
+                            3D Point Clouds: A Dataset, Benchmarks and Challenges (CVPR 2021)</a>
+                    </div>
+                    <div>
+                        We introduce an urban-scale photogrammetric point cloud dataset with nearly three billion richly
+                        annotated points, which is five times the number of labeled points than the existing largest
+                        point cloud dataset. We extensively evaluate the performance of state-of-the-art algorithms on
+                        our dataset and provide a comprehensive analysis of the results. In particular, we identify
+                        several key challenges towards urban-scale point cloud understanding.
+                    </div>
+                </div>
+            </div>
+
+            <div class='row vspace-top'>
+                <div class="col-sm-3">
+                    <img src='../imgs/19_NeurIPS_scannet_scene0015.gif' class='img-fluid'>
+                </div>
+
+                <div class="col">
+                    <div class='paper-title'>
+                        <a href="https://github.com/Yang7879/3D-BoNet">Learning Object Bounding Boxes for 3D Instance
+                            Segmentation on Point Clouds (NeurIPS 2019, Spotlight)</a>
+                    </div>
+                    <div>
+                        We propose a simple and efficient neural architecture for accurate 3D instance segmentation on
+                        point clouds. It achieves the SOTA performance on ScanNet and S3DIS (June 2019).
+                    </div>
+                </div>
+            </div>
+
+            <div class='row vspace-top'>
+                <div class="col-sm-3">
+                    <img src='../imgs/SpinNet_2020.png' class='img-fluid'>
+                </div>
+
+                <div class="col">
+                    <div class='paper-title'>
+                        <a href="https://github.com/QingyongHu/SpinNet">SpinNet: Learning a General Surface Descriptor
+                            for 3D Point Cloud
+                            Registration (CVPR 2021)</a>
+                    </div>
+                    <div>
+                        We introduce a new, yet conceptually simple, neural architecture to extract local features which
+                        are rotationally invariant whilst sufficiently informative to enable accurate registration. A
+                        Spatial Point Transformer is first introduced to map the input local surface into a carefully
+                        designed cylindrical space, enabling end-to-end optimization with SO(2) equivariant
+                        representation. A Neural Feature Extractor which leverages the 3D
+                        cylindrical convolutional neural layers is then utilized to derive a compact and representative
+                        descriptor for matching.
+                    </div>
+                </div>
+            </div>
+
+            <div class='row vspace-top'>
+                <div class="col-sm-3">
+                    <img src='../imgs/TPAMI_20.png' class='img-fluid'>
+                </div>
+
+                <div class="col">
+                    <div class='paper-title'>
+                        <a href="https://github.com/QingyongHu/SpinNet">Deep Learning for 3D Point Clouds: A Survey
+                            (IEEE TPAMI, 2020)</a>
+                    </div>
+                    <div>
+                        We presents a comprehensive review of recent progress in deep learning methods for point clouds.
+                        It covers three major tasks, including 3D shape classification, 3D object detection, and 3D
+                        point cloud segmentation. It also presents comparative results on several publicly available
+                        datasets, together with insightful observations and inspiring future research directions.
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="section">
+                <h2>Paper</h2>
+                <hr>
+                <div>
+                    <div class="list-group">
+                        <a href="https://arxiv.org/abs/2104.04891"
+                           class="list-group-item">
+                            <img src="img/paper_thumbnail.png"
+                                 style="width:100%; margin-right:-20px; margin-top:-10px;">
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Bibtex</h2>
+                <hr>
+                <div class="bibtexsection">
+                    @article{hu2021sqn,
+                    title={SQN: Weakly-Supervised Semantic Segmentation of Large-Scale 3D Point Clouds with 1000x Fewer
+                    Labels},
+                    author={Hu, Qingyong and Yang, Bo and Fang, Guangchi and Guo, Yulan and Leonardis, Ales and Trigoni,
+                    Niki and Markham, Andrew},
+                    journal={arXiv preprint arXiv:2104.04891},
+                    year={2021}
+                    }
+                </div>
+            </div>
+
+            <hr>
+
+            <footer>
+                <p>Send feedback and questions to <a href="https://qingyonghu.github.io/">Qingyong Hu</a></p>
+            </footer>
+        </div>
+
+
+        <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+                integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+                crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+                integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+                crossorigin="anonymous"></script>
+
+</body>
+</html>
